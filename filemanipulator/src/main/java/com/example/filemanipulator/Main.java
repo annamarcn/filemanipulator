@@ -12,7 +12,11 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class Main extends Application {
@@ -46,6 +50,8 @@ public class Main extends Application {
                 loadingFile(fileName, pathName, stage);
             } catch (FileNotFoundException ex) {
                 throw new RuntimeException(ex);
+            } catch (ParseException ex) {
+                throw new RuntimeException(ex);
             }
         });
         MenuItem saveAs = new MenuItem("Save As...");
@@ -73,33 +79,58 @@ public class Main extends Application {
 
     }
 
-    private void loadingFile(String file, String path, Stage stage) throws FileNotFoundException {
+    private void loadingFile(String file, String path, Stage stage) throws FileNotFoundException, ParseException {
         fileChooser.setTitle("Open File");
         fileChooser.setInitialDirectory(new File(path));
         fileChooser.showOpenDialog(stage);
         File fileToRead = new File(path + file);
         Scanner scanner = new Scanner(fileToRead);
-        ArrayList<String> currentLineStringList = new ArrayList<>(); //this will be used to save all the lines from the document
-        //save the entire document into currentLineStringList.
-        //we need to save the data somewhere so that later on we can manipulate it
+        ArrayList<String> currentLineStringList = new ArrayList<>();
         ArrayList<Transaction> transactions = new ArrayList<>();
+        String[] currentLine = new String[0];
+        int count = 0;
+        int countTransaction = 0;
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
 
         while (scanner.hasNext()) {
             currentLineStringList.add(scanner.nextLine());
         }
 
         for (int i = 0; i < currentLineStringList.size(); i++) { //loop over the entire document
-            String currentLine = currentLineStringList.get(i); //save the current line
-            for (int j = 0; j < currentLine.length(); j++) { //loop over the current line
+            currentLine = currentLineStringList.get(i).split("\t"); //save the current line & split on tabs
+            for(int j = 0; j < currentLine.length; j++){
+                String tempString = null;
+                String tempAmount = null;
+
+                if(!Character.isDigit(currentLine[j].charAt(0))){ //if string starts with a letter
+                    for(int x = 0; x < currentLine[j].length(); x++){
+                        if(!Character.isDigit(currentLine[j].charAt(x))){ //while character is not a digit
+                            tempString += currentLine[j]; //add to tempstring
+                            x++;
+                        }
+                        if(Character.isDigit(currentLine[j].charAt(x))){
+                            tempAmount += currentLine[j];
+                            x++;
+                        }
+                    }
+                    transactions.get(count).setDescription(tempString);
+                    transactions.get(count).setAmount(Float.parseFloat(tempAmount));
+                }
+                transactions.get(count).setAccountingDate(formatter.parse(currentLine[j]));
+                transactions.get(count).setTransactionDate(formatter.parse(currentLine[j+1]));
+                transactions.get(count).setBalance(Float.parseFloat(currentLine[j+2]));
             }
-
-
-
-        /*
-        for(int i = 0; i < currentLineStringList.size(); i++){
-            System.out.println(currentLineStringList);
         }
-         */
-        }
+
+            /*
+            for(int j = 0; j < count; j++){
+                transactions.get(countTransaction).setAccountingDate(formatter.parse(currentLine[j]));
+                transactions.get(countTransaction).setTransactionDate(formatter.parse(currentLine[j+1]));
+                countTransaction++;
+                count = count + 4;
+            }
+             */
+
+
     }
 }
