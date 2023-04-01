@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
@@ -89,36 +91,45 @@ public class Main extends Application {
         ArrayList<Transaction> transactions = new ArrayList<>();
         String currentLine = null;
         String firstDateString = null;
+        LocalDate firstDate = null;
         String secondDateString = null;
+        LocalDate secondDate = null;
         String description = null;
-        String amount = null;
-        String balance = null;
-        String restOfString = null;
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+        String stringAmount = null;
+        float amount = 0;
+        String stringBalance = null;
+        float balance = 0;
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
         while (scanner.hasNext()) {
             currentLineStringList.add(scanner.nextLine());
         }
 
         for (int i = 0; i < currentLineStringList.size(); i++) { //loop over the entire document
+            String restOfString = null;
             currentLine = currentLineStringList.get(i);
             firstDateString = currentLine.substring(0, 10);
             secondDateString = currentLine.substring(11, 21);
 
             restOfString = reverseString(currentLine.substring(22, currentLine.length()));
-            balance = restOfString.substring(0, restOfString.indexOf("\t"));
-            restOfString = restOfString.substring(balance.length()+1, restOfString.length());
-            amount = restOfString.substring(1, restOfString.indexOf(" "));
-            restOfString = restOfString.substring(amount.length()+2, restOfString.length());
+            stringBalance = restOfString.substring(0, restOfString.indexOf("\t"));
+            restOfString = restOfString.substring(stringBalance.length()+1, restOfString.length());
+            stringAmount = restOfString.substring(1, restOfString.indexOf(" "));
+            restOfString = restOfString.substring(stringAmount.length()+2, restOfString.length());
             description = restOfString.substring(0, restOfString.length());
 
-            balance = reverseString(balance);
-            amount = reverseString(amount);
+            stringBalance = reverseString(stringBalance);
+            stringBalance = stringBalance.replace(',', '.').replaceAll("\\s+","");
+            balance = Float.parseFloat(stringBalance);
+            stringAmount = reverseString(stringAmount);
+            stringAmount = stringAmount.replace(',', '.').replaceAll("\\s+","");
+            amount = Float.parseFloat(stringAmount);
             description = reverseString(description);
+            firstDate = LocalDate.parse(firstDateString, DateTimeFormatter.ISO_DATE);
+            secondDate = LocalDate.parse(secondDateString, DateTimeFormatter.ISO_DATE);
 
-            System.out.println("firstDateString = " + firstDateString + "\nsecondDateString = " + secondDateString
+            System.out.println("firstDate = " + firstDate + "\nsecondDate = " + secondDate
                     + "\ndescription = " + description + "\nbalance = " + balance + "\namount = " + amount);
-            restOfString = null;
         }
 
     }

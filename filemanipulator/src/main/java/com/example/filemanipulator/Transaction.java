@@ -1,15 +1,16 @@
 package com.example.filemanipulator;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class Transaction{
-    Date accountingDate;
-    Date transactionDate;
+    LocalDate accountingDate;
+    LocalDate transactionDate;
     String description;
     float amount;
     float balance;
 
-    public Transaction(Date accountingDate, Date transactionDate, String description, float amount, float balance) {
+    public Transaction(LocalDate accountingDate, LocalDate transactionDate, String description, float amount, float balance) {
         this.accountingDate = accountingDate;
         this.transactionDate = transactionDate;
         this.description = description;
@@ -17,19 +18,19 @@ public class Transaction{
         this.balance = balance;
     }
 
-    public Date getAccountingDate() {
+    public LocalDate getAccountingDate() {
         return accountingDate;
     }
 
-    public void setAccountingDate(Date accountingDate) {
+    public void setAccountingDate(LocalDate accountingDate) {
         this.accountingDate = accountingDate;
     }
 
-    public Date getTransactionDate() {
+    public LocalDate getTransactionDate() {
         return transactionDate;
     }
 
-    public void setTransactionDate(Date transactionDate) {
+    public void setTransactionDate(LocalDate transactionDate) {
         this.transactionDate = transactionDate;
     }
 
