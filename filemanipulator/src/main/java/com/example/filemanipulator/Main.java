@@ -87,9 +87,13 @@ public class Main extends Application {
         Scanner scanner = new Scanner(fileToRead);
         ArrayList<String> currentLineStringList = new ArrayList<>();
         ArrayList<Transaction> transactions = new ArrayList<>();
-        String[] currentLine = new String[0];
-        int count = 0;
-        int countTransaction = 0;
+        String currentLine = null;
+        String firstDateString = null;
+        String secondDateString = null;
+        String description = null;
+        String amount = null;
+        String balance = null;
+        String restOfString = null;
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
 
         while (scanner.hasNext()) {
@@ -97,40 +101,30 @@ public class Main extends Application {
         }
 
         for (int i = 0; i < currentLineStringList.size(); i++) { //loop over the entire document
-            currentLine = currentLineStringList.get(i).split("\t"); //save the current line & split on tabs
-            for(int j = 0; j < currentLine.length; j++){
-                String tempString = null;
-                String tempAmount = null;
+            currentLine = currentLineStringList.get(i);
+            firstDateString = currentLine.substring(0, 10);
+            secondDateString = currentLine.substring(11, 21);
 
-                if(!Character.isDigit(currentLine[j].charAt(0))){ //if string starts with a letter
-                    for(int x = 0; x < currentLine[j].length(); x++){
-                        if(!Character.isDigit(currentLine[j].charAt(x))){ //while character is not a digit
-                            tempString += currentLine[j]; //add to tempstring
-                            x++;
-                        }
-                        if(Character.isDigit(currentLine[j].charAt(x))){
-                            tempAmount += currentLine[j];
-                            x++;
-                        }
-                    }
-                    transactions.get(count).setDescription(tempString);
-                    transactions.get(count).setAmount(Float.parseFloat(tempAmount));
-                }
-                transactions.get(count).setAccountingDate(formatter.parse(currentLine[j]));
-                transactions.get(count).setTransactionDate(formatter.parse(currentLine[j+1]));
-                transactions.get(count).setBalance(Float.parseFloat(currentLine[j+2]));
-            }
+            restOfString = reverseString(currentLine.substring(22, currentLine.length()));
+            balance = restOfString.substring(0, restOfString.indexOf("\t"));
+            restOfString = restOfString.substring(balance.length()+1, restOfString.length());
+            amount = restOfString.substring(1, restOfString.indexOf(" "));
+            restOfString = restOfString.substring(amount.length()+2, restOfString.length());
+            description = restOfString.substring(0, restOfString.length());
+
+            balance = reverseString(balance);
+            amount = reverseString(amount);
+            description = reverseString(description);
+
+            System.out.println("firstDateString = " + firstDateString + "\nsecondDateString = " + secondDateString
+                    + "\ndescription = " + description + "\nbalance = " + balance + "\namount = " + amount);
+            restOfString = null;
         }
 
-            /*
-            for(int j = 0; j < count; j++){
-                transactions.get(countTransaction).setAccountingDate(formatter.parse(currentLine[j]));
-                transactions.get(countTransaction).setTransactionDate(formatter.parse(currentLine[j+1]));
-                countTransaction++;
-                count = count + 4;
-            }
-             */
-
-
+    }
+    public static String reverseString(String str){
+        StringBuilder sb=new StringBuilder(str);
+        sb.reverse();
+        return sb.toString();
     }
 }
